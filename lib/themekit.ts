@@ -24,8 +24,10 @@ type Result = {
  *
  * @param config - Themekit config
  * @param tokens - Tokens object
+ * @param mappings - Mappings object
  */
-export async function buildThemekit(config: any, tokens: any): Promise<Result[]> {
+// eslint-disable-next-line max-len
+export async function buildThemekit(config: any, tokens: any, mappings: Record<string, string> = {}): Promise<Result[]> {
   mockFile('tokens.json', JSON.stringify(tokens))
 
   // TODO: Register this format in themekit.
@@ -33,15 +35,23 @@ export async function buildThemekit(config: any, tokens: any): Promise<Result[]>
     name: 'json/extended',
     formatter(dictionary) {
       const result: Record<string, any> = {}
-      for (const prop of dictionary.allProperties) {
-        result[prop.name] = {
-          name: prop.name,
-          value: prop.value,
-          path: prop.path,
-          comment: prop.comment,
+      for (const { name, value, path, comment } of dictionary.allProperties) {
+        result[name] = {
+          value,
+          path,
+          comment,
+          name,
         }
       }
       return JSON.stringify(result, null, 2)
+    },
+  })
+
+  Api.registerTransform({
+    name: 'json/extended/mapper',
+    type: 'name',
+    transformer: (prop) => {
+      return mappings[prop.name] || prop.name
     },
   })
 

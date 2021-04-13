@@ -24,8 +24,9 @@ async function build(req: NowRequest, res: NowResponse): Promise<void> {
 
   try {
     const tokens = parseContent(req.body.tokens.content, req.body.tokens.language)
+    const mappings = parseContent(req.body.mappings, 'json')
     const config = parseContent(req.body.config, 'json')
-    const data = await buildThemekit(config, tokens)
+    const data = await buildThemekit(config, tokens, mappings)
 
     res.status(HTTP_CODE.OK).json({ data, success: true, meta: { themekit: version } })
   } catch (error) {
