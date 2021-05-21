@@ -62,6 +62,7 @@ export async function buildThemekit(
           value: prop.value,
           path: prop.path,
           comment: prop.comment,
+          rawValue: prop.original.value,
         }
       }
       return JSON.stringify(result, null, 2)
